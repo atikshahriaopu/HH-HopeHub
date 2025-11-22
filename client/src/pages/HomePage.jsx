@@ -391,8 +391,8 @@ const HomePage = () => {
           </div>
 
           {/* Social Links */}
-          <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-sm mb-4 md:mb-0">
+          <div className="border-t border-gray-800 pt-8 flex flex-col items-center">
+            <p className="text-sm mb-4 text-center">
               © 2025 HopeHub. All rights reserved. Built with ❤️ for humanity.
             </p>
             <div className="flex space-x-4">
