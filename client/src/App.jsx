@@ -11,6 +11,10 @@ import Registration from './pages/Registration';
 // Volunteer Pages
 import VolunteerDashboard from './pages/volunteer/VolunteerDashboard';
 import VolunteerProfile from './pages/volunteer/VolunteerProfile';
+import Opportunities from './pages/volunteer/Opportunities';
+import MyMissions from './pages/volunteer/MyMissions';
+import VolunteerMessage from './pages/volunteer/VolunteerMessage';
+import VolunteerNotification from './pages/volunteer/VolunteerNotification';
 
 // NGO Pages
 import NGODashboard from './pages/ngo/NGODashboard';
@@ -40,9 +44,10 @@ function App() {
         {/* Volunteer Routes */}
         <Route path="/volunteer/dashboard" element={<VolunteerDashboard />} />
         <Route path="/volunteer/profile" element={<VolunteerProfile />} />
-        <Route path="/volunteer/opportunities" element={<VolunteerDashboard />} />
-        <Route path="/volunteer/missions" element={<VolunteerDashboard />} />
-        <Route path="/volunteer/messages" element={<Chat />} />
+        <Route path="/volunteer/opportunities" element={<Opportunities />} />
+        <Route path="/volunteer/missions" element={<MyMissions />} />
+        <Route path="/volunteer/messages" element={<VolunteerMessage />} />
+        <Route path="/volunteer/notifications" element={<VolunteerNotification />} />
         <Route path="/volunteer/map" element={<MapView />} />
 
         {/* NGO Routes */}
