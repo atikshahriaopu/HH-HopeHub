@@ -1,10 +1,25 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../../components/DashboardLayout';
 import Card from '../../components/Card';
 import Button from '../../components/Button';
 
 const VolunteerProfile = () => {
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isMissionDetailsOpen, setIsMissionDetailsOpen] = useState(false);
+  const [selectedMission, setSelectedMission] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    name: 'Sarah Johnson',
+    email: 'sarah.johnson@email.com',
+    phone: '+1 (555) 123-4567',
+    location: 'New York, NY',
+    bio: 'Passionate about helping communities during crisis situations. Experienced in medical assistance and emergency response coordination.',
+    skills: ['First Aid', 'Medical Assistance', 'Communication', 'Team Leadership', 'Crisis Management'],
+    availability: 'Weekends & Evenings',
+    languages: ['English', 'Spanish'],
+  });
 
   // Mock profile data
   const profile = {
@@ -28,11 +43,86 @@ const VolunteerProfile = () => {
   ];
 
   const missionHistory = [
-    { id: 1, title: 'Flood Relief - Houston', date: 'Nov 15, 2025', hours: 8, status: 'Completed', rating: 5 },
-    { id: 2, title: 'Community Kitchen', date: 'Nov 10, 2025', hours: 4, status: 'Completed', rating: 5 },
-    { id: 3, title: 'Medical Camp Setup', date: 'Nov 5, 2025', hours: 6, status: 'Completed', rating: 4 },
-    { id: 4, title: 'Food Distribution', date: 'Oct 28, 2025', hours: 5, status: 'Completed', rating: 5 },
-    { id: 5, title: 'Shelter Construction', date: 'Oct 20, 2025', hours: 10, status: 'Completed', rating: 5 },
+    { 
+      id: 1, 
+      title: 'Flood Relief - Houston', 
+      date: 'Nov 15, 2025', 
+      hours: 8, 
+      status: 'Completed', 
+      rating: 5,
+      organization: 'Relief Organization',
+      location: 'Houston, TX',
+      description: 'Assisted with emergency flood relief operations in downtown Houston. Helped evacuate families, distribute emergency supplies, and set up temporary shelters.',
+      role: 'Team Leader',
+      volunteers: 23,
+      impact: 'Helped 150+ families, distributed 500+ emergency supply packages',
+      skills: ['Search & Rescue', 'Medical Assistance', 'Team Leadership'],
+      feedback: 'Excellent leadership and quick response in critical situations. Sarah demonstrated exceptional organizational skills and compassion.'
+    },
+    { 
+      id: 2, 
+      title: 'Community Kitchen', 
+      date: 'Nov 10, 2025', 
+      hours: 4, 
+      status: 'Completed', 
+      rating: 5,
+      organization: 'Community Relief Center',
+      location: 'New York, NY',
+      description: 'Volunteered at community kitchen providing hot meals to families in need. Helped with food preparation, serving, and cleanup.',
+      role: 'Kitchen Assistant',
+      volunteers: 15,
+      impact: 'Served 200+ meals to families in need',
+      skills: ['Food Distribution', 'Communication'],
+      feedback: 'Very dedicated and hardworking volunteer. Great team player!'
+    },
+    { 
+      id: 3, 
+      title: 'Medical Camp Setup', 
+      date: 'Nov 5, 2025', 
+      hours: 6, 
+      status: 'Completed', 
+      rating: 4,
+      organization: 'Health Response Team',
+      location: 'Brooklyn, NY',
+      description: 'Set up and managed medical camp for free health checkups. Assisted medical staff with patient registration and basic first aid.',
+      role: 'Medical Assistant',
+      volunteers: 12,
+      impact: '100+ patients treated, provided basic healthcare services',
+      skills: ['Medical Assistance', 'First Aid'],
+      feedback: 'Professional and efficient. Great support to our medical team.'
+    },
+    { 
+      id: 4, 
+      title: 'Food Distribution', 
+      date: 'Oct 28, 2025', 
+      hours: 5, 
+      status: 'Completed', 
+      rating: 5,
+      organization: 'Food Bank Alliance',
+      location: 'Manhattan, NY',
+      description: 'Coordinated food distribution drive for low-income families. Organized volunteers and managed inventory.',
+      role: 'Coordinator',
+      volunteers: 18,
+      impact: 'Distributed food to 300+ families',
+      skills: ['Logistics', 'Team Leadership'],
+      feedback: 'Outstanding coordination skills. Made the distribution very efficient.'
+    },
+    { 
+      id: 5, 
+      title: 'Shelter Construction', 
+      date: 'Oct 20, 2025', 
+      hours: 10, 
+      status: 'Completed', 
+      rating: 5,
+      organization: 'Habitat for Hope',
+      location: 'Queens, NY',
+      description: 'Participated in building temporary shelters for homeless families. Assisted with construction work and materials management.',
+      role: 'Construction Helper',
+      volunteers: 30,
+      impact: 'Built shelter for 5 families',
+      skills: ['Construction', 'Logistics'],
+      feedback: 'Hardworking and committed. Excellent contribution to the project.'
+    },
   ];
 
   const badges = [
@@ -41,6 +131,30 @@ const VolunteerProfile = () => {
     { name: 'Medical Hero', description: 'Healthcare missions', color: 'red', earned: 'Oct 2025' },
     { name: 'Community Builder', description: '10+ missions completed', color: 'green', earned: 'Sep 2025' },
   ];
+
+  const handleEditSubmit = (e) => {
+    e.preventDefault();
+    console.log('Profile updated:', editFormData);
+    setIsEditModalOpen(false);
+    // Here you would typically send the data to your backend
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleViewMissionDetails = (mission) => {
+    setSelectedMission(mission);
+    setIsMissionDetailsOpen(true);
+  };
+
+  const handleViewAllMissions = () => {
+    navigate('/volunteer/missions');
+  };
 
   return (
     <DashboardLayout userType="volunteer" userName={profile.name}>
@@ -87,10 +201,10 @@ const VolunteerProfile = () => {
                     </div>
                   </div>
                   <Button 
-                    variant={isEditing ? "outline" : "primary"}
-                    onClick={() => setIsEditing(!isEditing)}
+                    variant="primary"
+                    onClick={() => setIsEditModalOpen(true)}
                   >
-                    {isEditing ? 'Cancel' : 'Edit Profile'}
+                    Edit Profile
                   </Button>
                 </div>
               </div>
@@ -98,6 +212,270 @@ const VolunteerProfile = () => {
           </div>
         </Card>
       </div>
+
+      {/* Edit Profile Modal */}
+      {isEditModalOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+          onClick={() => setIsEditModalOpen(false)}
+        >
+          <div 
+            className="bg-white rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">Edit Profile</h2>
+              <button 
+                onClick={() => setIsEditModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <form onSubmit={handleEditSubmit} className="space-y-6">
+              {/* Personal Information */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Full Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={editFormData.name}
+                      onChange={handleEditChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={editFormData.email}
+                      onChange={handleEditChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Phone <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={editFormData.phone}
+                      onChange={handleEditChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Location <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="location"
+                      value={editFormData.location}
+                      onChange={handleEditChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Bio */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Bio <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  name="bio"
+                  value={editFormData.bio}
+                  onChange={handleEditChange}
+                  required
+                  rows={4}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Tell us about yourself and your volunteer experience..."
+                />
+              </div>
+
+              {/* Availability */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Availability <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="availability"
+                  value={editFormData.availability}
+                  onChange={handleEditChange}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select availability</option>
+                  <option value="Weekdays">Weekdays</option>
+                  <option value="Weekends">Weekends</option>
+                  <option value="Weekends & Evenings">Weekends & Evenings</option>
+                  <option value="Flexible">Flexible</option>
+                  <option value="Full Time">Full Time</option>
+                </select>
+              </div>
+
+              {/* Skills */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Skills
+                </label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {editFormData.skills.map((skill, index) => (
+                    <span key={index} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm flex items-center gap-2">
+                      {skill}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditFormData(prev => ({
+                            ...prev,
+                            skills: prev.skills.filter((_, i) => i !== index)
+                          }));
+                        }}
+                        className="text-blue-600 hover:text-blue-800"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    id="newSkill"
+                    placeholder="Add a skill"
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const input = e.target;
+                        if (input.value.trim()) {
+                          setEditFormData(prev => ({
+                            ...prev,
+                            skills: [...prev.skills, input.value.trim()]
+                          }));
+                          input.value = '';
+                        }
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      const input = document.getElementById('newSkill');
+                      if (input.value.trim()) {
+                        setEditFormData(prev => ({
+                          ...prev,
+                          skills: [...prev.skills, input.value.trim()]
+                        }));
+                        input.value = '';
+                      }
+                    }}
+                  >
+                    Add
+                  </Button>
+                </div>
+              </div>
+
+              {/* Languages */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Languages
+                </label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {editFormData.languages.map((lang, index) => (
+                    <span key={index} className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm flex items-center gap-2">
+                      {lang}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditFormData(prev => ({
+                            ...prev,
+                            languages: prev.languages.filter((_, i) => i !== index)
+                          }));
+                        }}
+                        className="text-green-600 hover:text-green-800"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    id="newLanguage"
+                    placeholder="Add a language"
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const input = e.target;
+                        if (input.value.trim()) {
+                          setEditFormData(prev => ({
+                            ...prev,
+                            languages: [...prev.languages, input.value.trim()]
+                          }));
+                          input.value = '';
+                        }
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      const input = document.getElementById('newLanguage');
+                      if (input.value.trim()) {
+                        setEditFormData(prev => ({
+                          ...prev,
+                          languages: [...prev.languages, input.value.trim()]
+                        }));
+                        input.value = '';
+                      }
+                    }}
+                  >
+                    Add
+                  </Button>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-4 border-t">
+                <Button
+                  type="button"
+                  variant="outline"
+                  fullWidth
+                  onClick={() => setIsEditModalOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" variant="primary" fullWidth>
+                  Save Changes
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -165,12 +543,12 @@ const VolunteerProfile = () => {
                         ))}
                       </span>
                     </div>
-                    <Button variant="ghost" size="sm">View Details</Button>
+                    <Button variant="ghost" size="sm" onClick={() => handleViewMissionDetails(mission)}>View Details</Button>
                   </div>
                 </div>
               ))}
             </div>
-            <Button variant="outline" fullWidth className="mt-4">View All Missions</Button>
+            <Button variant="outline" fullWidth className="mt-4" onClick={handleViewAllMissions}>View All Missions</Button>
           </Card>
 
           {/* Badges & Achievements */}
@@ -302,6 +680,151 @@ const VolunteerProfile = () => {
           </Card>
         </div>
       </div>
+
+      {/* Mission Details Modal */}
+      {isMissionDetailsOpen && selectedMission && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+          onClick={() => setIsMissionDetailsOpen(false)}
+        >
+          <div 
+            className="bg-white rounded-2xl p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between mb-6">
+              <div className="flex-1">
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">{selectedMission.title}</h2>
+                <div className="flex items-center gap-3 text-sm text-gray-600">
+                  <span className="flex items-center gap-1">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    {selectedMission.date}
+                  </span>
+                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    {selectedMission.status}
+                  </span>
+                </div>
+              </div>
+              <button 
+                onClick={() => setIsMissionDetailsOpen(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Mission Content */}
+            <div className="space-y-6">
+              {/* Organization & Location */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-blue-50 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-1">
+                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    <span className="text-sm font-medium text-gray-700">Organization</span>
+                  </div>
+                  <p className="font-semibold text-gray-900">{selectedMission.organization}</p>
+                </div>
+                <div className="bg-green-50 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-1">
+                    <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span className="text-sm font-medium text-gray-700">Location</span>
+                  </div>
+                  <p className="font-semibold text-gray-900">{selectedMission.location}</p>
+                </div>
+              </div>
+
+              {/* Description */}
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-2">Mission Description</h3>
+                <p className="text-gray-700 leading-relaxed">{selectedMission.description}</p>
+              </div>
+
+              {/* Role & Stats */}
+              <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-4">
+                <h3 className="font-semibold text-gray-900 mb-3">Your Contribution</h3>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="text-center">
+                    <p className="text-sm text-gray-600 mb-1">Your Role</p>
+                    <p className="text-lg font-bold text-gray-900">{selectedMission.role}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm text-gray-600 mb-1">Hours Contributed</p>
+                    <p className="text-lg font-bold text-gray-900">{selectedMission.hours}h</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm text-gray-600 mb-1">Team Size</p>
+                    <p className="text-lg font-bold text-gray-900">{selectedMission.volunteers}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Skills Used */}
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-3">Skills Applied</h3>
+                <div className="flex flex-wrap gap-2">
+                  {selectedMission.skills.map((skill, index) => (
+                    <span key={index} className="px-3 py-1.5 bg-blue-100 text-blue-800 rounded-lg text-sm font-medium">
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Impact */}
+              <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+                <div className="flex items-start gap-3">
+                  <svg className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-1">Mission Impact</h3>
+                    <p className="text-gray-700">{selectedMission.impact}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Rating */}
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-3">Your Rating</h3>
+                <div className="flex items-center gap-2">
+                  {[...Array(5)].map((_, i) => (
+                    <svg key={i} className={`w-8 h-8 ${
+                      i < selectedMission.rating ? 'text-yellow-500' : 'text-gray-300'
+                    }`} fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  ))}
+                  <span className="text-gray-600 ml-2">({selectedMission.rating}/5)</span>
+                </div>
+              </div>
+
+              {/* Feedback */}
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h3 className="font-semibold text-gray-900 mb-2">Feedback from Organization</h3>
+                <p className="text-gray-700 italic">"{selectedMission.feedback}"</p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-4 border-t">
+                <Button variant="outline" fullWidth>
+                  Download Certificate
+                </Button>
+                <Button variant="primary" fullWidth onClick={() => setIsMissionDetailsOpen(false)}>
+                  Close
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 };

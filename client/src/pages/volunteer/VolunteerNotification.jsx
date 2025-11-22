@@ -5,6 +5,7 @@ import Button from '../../components/Button';
 
 const VolunteerNotification = () => {
   const [filter, setFilter] = useState('all');
+  const [selectedNotification, setSelectedNotification] = useState(null);
 
   const notifications = [
     {
@@ -125,6 +126,11 @@ const VolunteerNotification = () => {
     console.log('Clearing all notifications');
   };
 
+  const handleNotificationClick = (notif) => {
+    setSelectedNotification(notif);
+    console.log('Notification clicked:', notif);
+  };
+
   return (
     <DashboardLayout userType="volunteer" userName="Sarah Johnson">
       <div className="mb-8">
@@ -241,6 +247,7 @@ const VolunteerNotification = () => {
                   className={`p-4 hover:bg-gray-50 transition-colors cursor-pointer ${
                     notif.unread ? 'bg-blue-50' : ''
                   }`}
+                  onClick={() => handleNotificationClick(notif)}
                 >
                   <div className="flex items-start gap-4">
                     <div className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${getColorClasses(notif.color)}`}>
@@ -281,6 +288,235 @@ const VolunteerNotification = () => {
           </div>
         </Card>
       </div>
+
+      {/* Notification Details Modal */}
+      {selectedNotification && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+          onClick={() => setSelectedNotification(null)}
+        >
+          <div 
+            className="bg-white rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between mb-6">
+              <div className="flex items-start gap-4 flex-1">
+                <div className={`flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center ${getColorClasses(selectedNotification.color)}`}>
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={selectedNotification.icon} />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">{selectedNotification.title}</h2>
+                  <div className="flex items-center gap-3 text-sm text-gray-600">
+                    <span className="flex items-center gap-1">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      {selectedNotification.time}
+                    </span>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      selectedNotification.type === 'emergency' ? 'bg-red-100 text-red-800' :
+                      selectedNotification.type === 'opportunity' ? 'bg-blue-100 text-blue-800' :
+                      selectedNotification.type === 'message' ? 'bg-green-100 text-green-800' :
+                      selectedNotification.type === 'mission' ? 'bg-purple-100 text-purple-800' :
+                      selectedNotification.type === 'achievement' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {selectedNotification.type.charAt(0).toUpperCase() + selectedNotification.type.slice(1)}
+                    </span>
+                    {selectedNotification.unread && (
+                      <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                        New
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <button 
+                onClick={() => setSelectedNotification(null)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Notification Content */}
+            <div className="space-y-6">
+              <div className="bg-gray-50 rounded-lg p-4">
+                <p className="text-gray-800 leading-relaxed">{selectedNotification.message}</p>
+              </div>
+
+              {/* Additional Details Based on Type */}
+              {selectedNotification.type === 'opportunity' && (
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-gray-900">Opportunity Details</h3>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p className="text-gray-600 mb-1">Location</p>
+                      <p className="font-medium text-gray-900">Houston, TX</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-600 mb-1">Duration</p>
+                      <p className="font-medium text-gray-900">4-6 hours</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-600 mb-1">Volunteers Needed</p>
+                      <p className="font-medium text-gray-900">15 people</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-600 mb-1">Skills Required</p>
+                      <p className="font-medium text-gray-900">Physical Labor</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {selectedNotification.type === 'emergency' && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <div className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <div>
+                      <p className="font-semibold text-red-900 mb-1">Emergency Response Required</p>
+                      <p className="text-sm text-red-800">This is a high-priority alert. Immediate action may be needed. Please respond as soon as possible if you are available.</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {selectedNotification.type === 'message' && (
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-gray-900">Message Details</h3>
+                  <div className="bg-white border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-green-600 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
+                        RC
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900">Red Cross Houston</p>
+                        <p className="text-sm text-gray-600">NGO Organization</p>
+                      </div>
+                    </div>
+                    <p className="text-gray-700 text-sm">Thank you for your interest in our mission. We're looking forward to having you on board!</p>
+                  </div>
+                </div>
+              )}
+
+              {selectedNotification.type === 'mission' && (
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-gray-900">Mission Information</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between py-2 border-b border-gray-200">
+                      <span className="text-gray-600">Mission Name</span>
+                      <span className="font-medium text-gray-900">Supply Distribution</span>
+                    </div>
+                    <div className="flex items-center justify-between py-2 border-b border-gray-200">
+                      <span className="text-gray-600">New Time</span>
+                      <span className="font-medium text-gray-900">10:00 AM</span>
+                    </div>
+                    <div className="flex items-center justify-between py-2 border-b border-gray-200">
+                      <span className="text-gray-600">Date</span>
+                      <span className="font-medium text-gray-900">Nov 23, 2025</span>
+                    </div>
+                    <div className="flex items-center justify-between py-2">
+                      <span className="text-gray-600">Status</span>
+                      <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                        Rescheduled
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {selectedNotification.type === 'achievement' && (
+                <div className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-lg p-6 text-center">
+                  <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Congratulations!</h3>
+                  <p className="text-gray-700 mb-4">You've reached a new milestone in your volunteer journey.</p>
+                  <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
+                    <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <span>+50 Impact Points</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-4 border-t">
+                {selectedNotification.type === 'opportunity' && (
+                  <>
+                    <Button variant="primary" fullWidth>
+                      View Opportunity
+                    </Button>
+                    <Button variant="outline" fullWidth onClick={() => setSelectedNotification(null)}>
+                      Dismiss
+                    </Button>
+                  </>
+                )}
+                {selectedNotification.type === 'emergency' && (
+                  <>
+                    <Button variant="primary" fullWidth>
+                      Respond Now
+                    </Button>
+                    <Button variant="outline" fullWidth onClick={() => setSelectedNotification(null)}>
+                      Not Available
+                    </Button>
+                  </>
+                )}
+                {selectedNotification.type === 'message' && (
+                  <>
+                    <Button variant="primary" fullWidth>
+                      Reply
+                    </Button>
+                    <Button variant="outline" fullWidth onClick={() => setSelectedNotification(null)}>
+                      Close
+                    </Button>
+                  </>
+                )}
+                {selectedNotification.type === 'mission' && (
+                  <>
+                    <Button variant="primary" fullWidth>
+                      View Mission
+                    </Button>
+                    <Button variant="outline" fullWidth onClick={() => setSelectedNotification(null)}>
+                      Acknowledge
+                    </Button>
+                  </>
+                )}
+                {selectedNotification.type === 'achievement' && (
+                  <Button variant="primary" fullWidth onClick={() => setSelectedNotification(null)}>
+                    Continue
+                  </Button>
+                )}
+                {selectedNotification.type === 'system' && (
+                  <Button variant="primary" fullWidth onClick={() => setSelectedNotification(null)}>
+                    Close
+                  </Button>
+                )}
+              </div>
+
+              {/* Mark as Read */}
+              {selectedNotification.unread && (
+                <button 
+                  className="w-full text-center text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                  onClick={() => console.log('Mark as read')}
+                >
+                  Mark as read
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 };

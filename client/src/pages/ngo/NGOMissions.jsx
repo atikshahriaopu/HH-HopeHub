@@ -10,6 +10,12 @@ const NGOMissions = () => {
   const [isViewDetailsOpen, setIsViewDetailsOpen] = useState(false);
   const [isManageOpen, setIsManageOpen] = useState(false);
   const [selectedMission, setSelectedMission] = useState(null);
+  const [isEditDetailsOpen, setIsEditDetailsOpen] = useState(false);
+  const [isViewVolunteersOpen, setIsViewVolunteersOpen] = useState(false);
+  const [isViewReportsOpen, setIsViewReportsOpen] = useState(false);
+  const [isSendMessageOpen, setIsSendMessageOpen] = useState(false);
+  const [editMissionData, setEditMissionData] = useState({});
+  const [messageData, setMessageData] = useState({ subject: '', message: '' });
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -91,6 +97,49 @@ const NGOMissions = () => {
   const handleManage = (mission) => {
     setSelectedMission(mission);
     setIsManageOpen(true);
+  };
+
+  const handleEditDetails = (mission) => {
+    setEditMissionData({
+      title: mission.title,
+      description: mission.description,
+      location: mission.location,
+      startDate: mission.startDate,
+      requiredVolunteers: mission.requiredVolunteers,
+      priority: mission.priority,
+    });
+    setIsManageOpen(false);
+    setIsEditDetailsOpen(true);
+  };
+
+  const handleEditSubmit = (e) => {
+    e.preventDefault();
+    console.log('Updating mission:', editMissionData);
+    setIsEditDetailsOpen(false);
+    setIsManageOpen(true);
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditMissionData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSendMessage = () => {
+    setIsManageOpen(false);
+    setIsSendMessageOpen(true);
+  };
+
+  const handleMessageSubmit = (e) => {
+    e.preventDefault();
+    console.log('Sending message:', messageData);
+    setMessageData({ subject: '', message: '' });
+    setIsSendMessageOpen(false);
+    setIsManageOpen(true);
+  };
+
+  const handleMessageChange = (e) => {
+    const { name, value } = e.target;
+    setMessageData(prev => ({ ...prev, [name]: value }));
   };
 
   return (
@@ -516,25 +565,25 @@ const NGOMissions = () => {
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <h4 className="font-semibold text-gray-900 mb-3">Quick Actions</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" onClick={() => handleEditDetails(selectedMission)}>
                       <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                       </svg>
                       Edit Details
                     </Button>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" onClick={() => { setIsManageOpen(false); setIsViewVolunteersOpen(true); }}>
                       <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                       </svg>
                       View Volunteers
                     </Button>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" onClick={() => { setIsManageOpen(false); setIsViewReportsOpen(true); }}>
                       <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                       </svg>
                       View Reports
                     </Button>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" onClick={handleSendMessage}>
                       <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                       </svg>
@@ -601,6 +650,521 @@ const NGOMissions = () => {
                   Save Changes
                 </Button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Details Modal */}
+      {isEditDetailsOpen && selectedMission && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={() => setIsEditDetailsOpen(false)}
+        >
+          <div 
+            className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Edit Mission Details</h2>
+                <button
+                  onClick={() => setIsEditDetailsOpen(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <form onSubmit={handleEditSubmit}>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Mission Title *
+                    </label>
+                    <input
+                      type="text"
+                      name="title"
+                      value={editMissionData.title}
+                      onChange={handleEditChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Description *
+                    </label>
+                    <textarea
+                      name="description"
+                      value={editMissionData.description}
+                      onChange={handleEditChange}
+                      required
+                      rows={4}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Location *
+                      </label>
+                      <input
+                        type="text"
+                        name="location"
+                        value={editMissionData.location}
+                        onChange={handleEditChange}
+                        required
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Start Date *
+                      </label>
+                      <input
+                        type="date"
+                        name="startDate"
+                        value={editMissionData.startDate}
+                        onChange={handleEditChange}
+                        required
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Required Volunteers *
+                      </label>
+                      <input
+                        type="number"
+                        name="requiredVolunteers"
+                        value={editMissionData.requiredVolunteers}
+                        onChange={handleEditChange}
+                        required
+                        min="1"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Priority *
+                      </label>
+                      <select
+                        name="priority"
+                        value={editMissionData.priority}
+                        onChange={handleEditChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      >
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 mt-6">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    fullWidth
+                    onClick={() => {
+                      setIsEditDetailsOpen(false);
+                      setIsManageOpen(true);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" variant="primary" fullWidth>
+                    Save Changes
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View Volunteers Modal */}
+      {isViewVolunteersOpen && selectedMission && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={() => setIsViewVolunteersOpen(false)}
+        >
+          <div 
+            className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Mission Volunteers</h2>
+                  <p className="text-gray-600 mt-1">{selectedMission.title}</p>
+                </div>
+                <button
+                  onClick={() => setIsViewVolunteersOpen(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Stats */}
+              <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <p className="text-sm text-gray-600 mb-1">Total Enrolled</p>
+                  <p className="text-2xl font-bold text-gray-900">{selectedMission.volunteers}</p>
+                </div>
+                <div className="bg-green-50 p-4 rounded-lg">
+                  <p className="text-sm text-gray-600 mb-1">Still Needed</p>
+                  <p className="text-2xl font-bold text-gray-900">{selectedMission.requiredVolunteers - selectedMission.volunteers}</p>
+                </div>
+                <div className="bg-purple-50 p-4 rounded-lg">
+                  <p className="text-sm text-gray-600 mb-1">Total Hours</p>
+                  <p className="text-2xl font-bold text-gray-900">142</p>
+                </div>
+              </div>
+
+              {/* Volunteers List */}
+              <div className="space-y-3">
+                {[
+                  { name: 'Sarah Johnson', role: 'Team Leader', hours: 24, status: 'Active', skills: 'Medical, First Aid', avatar: 'SJ' },
+                  { name: 'Mike Chen', role: 'Logistics', hours: 18, status: 'Active', skills: 'Transportation, Coordination', avatar: 'MC' },
+                  { name: 'Emma Davis', role: 'Communication', hours: 16, status: 'Active', skills: 'Translation, Outreach', avatar: 'ED' },
+                  { name: 'James Wilson', role: 'General Support', hours: 22, status: 'Active', skills: 'Construction, Heavy Lifting', avatar: 'JW' },
+                  { name: 'Lisa Brown', role: 'Medical Support', hours: 20, status: 'On Leave', skills: 'Nursing, First Aid', avatar: 'LB' },
+                ].map((volunteer, index) => (
+                  <div key={index} className="border border-gray-200 rounded-lg p-4 hover:border-gray-300 transition-colors">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-green-600 rounded-full flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
+                        {volunteer.avatar}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-2">
+                          <div>
+                            <h3 className="font-semibold text-gray-900">{volunteer.name}</h3>
+                            <p className="text-sm text-gray-600">{volunteer.role}</p>
+                          </div>
+                          <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                            volunteer.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'
+                          }`}>
+                            {volunteer.status}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-4 text-sm text-gray-600">
+                          <span className="flex items-center gap-1">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {volunteer.hours}h logged
+                          </span>
+                          <span>•</span>
+                          <span>{volunteer.skills}</span>
+                        </div>
+                      </div>
+                      <Button size="sm" variant="outline">View Profile</Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <Button variant="outline" fullWidth onClick={() => {
+                  setIsViewVolunteersOpen(false);
+                  setIsManageOpen(true);
+                }}>
+                  Back
+                </Button>
+                <Button variant="primary" fullWidth>
+                  Add Volunteers
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View Reports Modal */}
+      {isViewReportsOpen && selectedMission && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={() => setIsViewReportsOpen(false)}
+        >
+          <div 
+            className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Mission Reports & Analytics</h2>
+                  <p className="text-gray-600 mt-1">{selectedMission.title}</p>
+                </div>
+                <button
+                  onClick={() => setIsViewReportsOpen(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Key Metrics */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div className="bg-blue-50 rounded-lg p-4 text-center">
+                  <svg className="w-8 h-8 text-blue-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <p className="text-2xl font-bold text-gray-900">142</p>
+                  <p className="text-xs text-gray-600">Total Hours</p>
+                </div>
+                <div className="bg-green-50 rounded-lg p-4 text-center">
+                  <svg className="w-8 h-8 text-green-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  <p className="text-2xl font-bold text-gray-900">1,240</p>
+                  <p className="text-xs text-gray-600">People Helped</p>
+                </div>
+                <div className="bg-purple-50 rounded-lg p-4 text-center">
+                  <svg className="w-8 h-8 text-purple-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                  </svg>
+                  <p className="text-2xl font-bold text-gray-900">328</p>
+                  <p className="text-xs text-gray-600">Supplies Used</p>
+                </div>
+                <div className="bg-orange-50 rounded-lg p-4 text-center">
+                  <svg className="w-8 h-8 text-orange-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <p className="text-2xl font-bold text-gray-900">$8.4k</p>
+                  <p className="text-xs text-gray-600">Resources Value</p>
+                </div>
+              </div>
+
+              {/* Activity Timeline */}
+              <div className="mb-6">
+                <h3 className="font-semibold text-gray-900 mb-4">Recent Activity</h3>
+                <div className="space-y-3">
+                  {[
+                    { date: 'Nov 20, 2025', activity: 'Distributed 200 relief packages', type: 'success' },
+                    { date: 'Nov 19, 2025', activity: '5 new volunteers joined the mission', type: 'info' },
+                    { date: 'Nov 18, 2025', activity: 'Medical supplies restocked', type: 'info' },
+                    { date: 'Nov 17, 2025', activity: 'Completed shelter setup for 50 families', type: 'success' },
+                    { date: 'Nov 16, 2025', activity: 'Emergency alert sent to area residents', type: 'warning' },
+                  ].map((item, index) => (
+                    <div key={index} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                      <div className={`w-2 h-2 rounded-full mt-2 ${
+                        item.type === 'success' ? 'bg-green-500' :
+                        item.type === 'warning' ? 'bg-orange-500' : 'bg-blue-500'
+                      }`}></div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-900">{item.activity}</p>
+                        <p className="text-xs text-gray-600">{item.date}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Impact Summary */}
+              <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-lg p-4 mb-6">
+                <h3 className="font-semibold text-gray-900 mb-3">Impact Summary</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                  <div className="flex items-center gap-2">
+                    <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="text-gray-700">15 shelters constructed</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="text-gray-700">542 meals distributed</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="text-gray-700">87 medical consultations</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="text-gray-700">1,240 people supported</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <Button variant="outline" fullWidth onClick={() => {
+                  setIsViewReportsOpen(false);
+                  setIsManageOpen(true);
+                }}>
+                  Back
+                </Button>
+                <Button variant="primary" fullWidth>
+                  Download Full Report
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Send Message Modal */}
+      {isSendMessageOpen && selectedMission && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={() => setIsSendMessageOpen(false)}
+        >
+          <div 
+            className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Send Message to Volunteers</h2>
+                  <p className="text-gray-600 mt-1">{selectedMission.title}</p>
+                </div>
+                <button
+                  onClick={() => setIsSendMessageOpen(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Recipients Info */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <div className="flex items-center gap-2 text-blue-900 mb-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="font-medium">Message Recipients</span>
+                </div>
+                <p className="text-sm text-blue-800">
+                  This message will be sent to all {selectedMission.volunteers} volunteers assigned to this mission.
+                </p>
+              </div>
+
+              <form onSubmit={handleMessageSubmit}>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Subject <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="subject"
+                      value={messageData.subject}
+                      onChange={handleMessageChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      placeholder="e.g., Mission Update - Schedule Change"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Message <span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                      name="message"
+                      value={messageData.message}
+                      onChange={handleMessageChange}
+                      required
+                      rows={8}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      placeholder="Write your message here..."
+                    />
+                  </div>
+
+                  {/* Quick Templates */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Quick Templates</label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setMessageData({
+                          subject: 'Mission Update',
+                          message: 'Dear volunteers,\n\nWe have an important update regarding the mission. Please check your schedules and confirm your availability.\n\nThank you for your dedication.'
+                        })}
+                      >
+                        Mission Update
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setMessageData({
+                          subject: 'Schedule Change',
+                          message: 'Dear volunteers,\n\nPlease note that the mission schedule has been updated. New timing and details are attached.\n\nPlease confirm your availability.'
+                        })}
+                      >
+                        Schedule Change
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setMessageData({
+                          subject: 'Thank You',
+                          message: 'Dear volunteers,\n\nThank you for your incredible dedication and hard work. Your efforts are making a real difference in the community.\n\nWe appreciate you!'
+                        })}
+                      >
+                        Thank You
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setMessageData({
+                          subject: 'Urgent Alert',
+                          message: 'Dear volunteers,\n\nThis is an urgent update regarding the mission. Please respond as soon as possible.\n\nImmediate attention required.'
+                        })}
+                      >
+                        Urgent Alert
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 mt-6">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    fullWidth
+                    onClick={() => {
+                      setIsSendMessageOpen(false);
+                      setIsManageOpen(true);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" variant="primary" fullWidth>
+                    Send Message
+                  </Button>
+                </div>
+              </form>
             </div>
           </div>
         </div>

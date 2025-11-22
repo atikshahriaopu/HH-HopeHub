@@ -3,6 +3,10 @@ import { Link } from 'react-router-dom';
 import HomeNavbar from '../components/HomeNavbar';
 
 const HomePage = () => {
+  const handleLogoClick = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <HomeNavbar />
@@ -344,10 +348,10 @@ const HomePage = () => {
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             {/* Brand */}
             <div>
-              <div className="flex items-center space-x-2 mb-4">
+              <Link to="/" onClick={handleLogoClick} className="flex items-center space-x-2 mb-4 cursor-pointer hover:opacity-80 transition-opacity inline-flex">
                 <img src="/hh.png" alt="HopeHub Logo" className="w-10 h-10 object-contain" />
                 <span className="text-xl font-bold text-white">HopeHub</span>
-              </div>
+              </Link>
               <p className="text-sm">
                 Connecting hearts and hands for humanitarian relief worldwide.
               </p>

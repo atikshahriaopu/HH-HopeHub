@@ -4,12 +4,16 @@ import { Link } from 'react-router-dom';
 const HomeNavbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const handleLogoClick = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to="/" onClick={handleLogoClick} className="flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity">
             <img src="/hh.png" alt="HopeHub Logo" className="w-10 h-10 object-contain" />
             <span className="text-2xl font-bold text-gray-900">
               Hope<span className="text-blue-600">Hub</span>
