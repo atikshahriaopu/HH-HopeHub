@@ -271,7 +271,7 @@ const HomePage = () => {
             <p className="text-lg text-gray-600">Everyone has a role to play in saving lives</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 gap-8">
             {/* NGOs */}
             <div className="bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-shadow">
               <div className="bg-blue-100 w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center">
@@ -332,36 +332,6 @@ const HomePage = () => {
               </ul>
               <Link to="/register" className="block w-full text-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold">
                 Volunteer Now
-              </Link>
-            </div>
-
-            {/* Authorities */}
-            <div className="bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-shadow">
-              <div className="bg-purple-100 w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center">
-                <svg className="w-10 h-10 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3 text-center">Authorities</h3>
-              <p className="text-gray-600 mb-6 text-center">
-                Monitor relief efforts, coordinate resources, and oversee disaster response at scale.
-              </p>
-              <ul className="space-y-2 text-gray-700 mb-6">
-                <li className="flex items-start">
-                  <span className="text-purple-600 mr-2">✓</span>
-                  <span>Dashboard overview</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-purple-600 mr-2">✓</span>
-                  <span>Resource allocation</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-purple-600 mr-2">✓</span>
-                  <span>Analytics and reporting</span>
-                </li>
-              </ul>
-              <Link to="/register" className="block w-full text-center px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-semibold">
-                Register Authority
               </Link>
             </div>
           </div>

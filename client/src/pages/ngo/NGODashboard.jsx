@@ -178,7 +178,9 @@ const NGODashboard = () => {
           <h2 className="text-xl font-bold text-gray-900">Available Volunteers</h2>
           <Button size="sm" variant="ghost">View All</Button>
         </div>
-        <div className="overflow-x-auto">
+        
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200">
@@ -220,6 +222,42 @@ const NGODashboard = () => {
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden space-y-4">
+          {recentVolunteers.map((volunteer) => (
+            <div key={volunteer.id} className="border border-gray-200 rounded-lg p-4 hover:border-gray-300 transition-colors">
+              <div className="flex items-start gap-3 mb-3">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-green-600 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0">
+                  {volunteer.avatar}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-medium text-gray-900 mb-1">{volunteer.name}</h3>
+                  <p className="text-sm text-gray-600 mb-2">{volunteer.skills}</p>
+                  <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600">
+                    <span className="flex items-center gap-1">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      {volunteer.location}
+                    </span>
+                    <span>•</span>
+                    <span>{volunteer.hours}h contributed</span>
+                  </div>
+                </div>
+                <span className={`px-2 py-1 text-xs font-medium rounded-full flex-shrink-0 ${
+                  volunteer.status === 'Available' 
+                    ? 'bg-green-100 text-green-800' 
+                    : 'bg-blue-100 text-blue-800'
+                }`}>
+                  {volunteer.status}
+                </span>
+              </div>
+              <Button size="sm" variant="outline" fullWidth>Assign to Mission</Button>
+            </div>
+          ))}
         </div>
       </Card>
     </DashboardLayout>
