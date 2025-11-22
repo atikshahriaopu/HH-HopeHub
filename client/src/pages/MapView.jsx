@@ -553,7 +553,7 @@ const MapView = () => {
           onClick={() => setIsDetailsModalOpen(false)}
         >
           <div 
-            className="bg-white rounded-2xl p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto"
+            className="bg-white rounded-2xl p-4 sm:p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between mb-6">
