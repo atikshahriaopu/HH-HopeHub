@@ -18,11 +18,16 @@ import VolunteerNotification from './pages/volunteer/VolunteerNotification';
 
 // NGO Pages
 import NGODashboard from './pages/ngo/NGODashboard';
+import NGOVolunteers from './pages/ngo/NGOVolunteers';
+import NGOMissions from './pages/ngo/NGOMissions';
+import NGOResources from './pages/ngo/NGOResources';
+import NGOMessage from './pages/ngo/NGOMessage';
+import NGOProfile from './pages/ngo/NGOProfile';
+import NGONotification from './pages/ngo/NGONotification';
 
 // Shared Pages
-import EmergencyAlert from './pages/emergency/EmergencyAlert';
-import Chat from './pages/chat/Chat';
-import MapView from './pages/map/MapView';
+import EmergencyAlert from './pages/EmergencyAlert';
+import MapView from './pages/MapView';
 
 // Showcase
 import ComponentShowcase from './pages/ComponentShowcase';
@@ -52,15 +57,15 @@ function App() {
 
         {/* NGO Routes */}
         <Route path="/ngo/dashboard" element={<NGODashboard />} />
-        <Route path="/ngo/volunteers" element={<NGODashboard />} />
-        <Route path="/ngo/missions" element={<NGODashboard />} />
-        <Route path="/ngo/resources" element={<NGODashboard />} />
-        <Route path="/ngo/messages" element={<Chat />} />
-        <Route path="/ngo/reports" element={<NGODashboard />} />
+        <Route path="/ngo/volunteers" element={<NGOVolunteers />} />
+        <Route path="/ngo/missions" element={<NGOMissions />} />
+        <Route path="/ngo/resources" element={<NGOResources />} />
+        <Route path="/ngo/messages" element={<NGOMessage />} />
+        <Route path="/ngo/profile" element={<NGOProfile />} />
+        <Route path="/ngo/notifications" element={<NGONotification />} />
 
         {/* Shared Routes */}
-        <Route path="/emergency" element={<EmergencyAlert />} />
-        <Route path="/chat" element={<Chat />} />
+        <Route path="/alert" element={<EmergencyAlert />} />
         <Route path="/map" element={<MapView />} />
         <Route path="/profile" element={<VolunteerProfile />} />
         <Route path="/settings" element={<VolunteerDashboard />} />

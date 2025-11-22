@@ -4,6 +4,7 @@ export { default as Input } from './Input';
 export { default as Card } from './Card';
 
 // Layout Components
+export { default as HomeNavbar } from './HomeNavbar';
 export { default as VolunteerNavbar } from './VolunteerNavbar';
 export { default as NGONavbar } from './NGONavbar';
 export { default as VolunteerSidebar } from './VolunteerSidebar';
