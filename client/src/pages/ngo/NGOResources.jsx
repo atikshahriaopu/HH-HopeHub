@@ -6,6 +6,22 @@ import Button from '../../components/Button';
 const NGOResources = () => {
   const [filterCategory, setFilterCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isAllocateModalOpen, setIsAllocateModalOpen] = useState(false);
+  const [selectedResource, setSelectedResource] = useState(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    category: 'Medical',
+    quantity: '',
+    unit: 'units',
+    location: '',
+  });
+  const [allocateData, setAllocateData] = useState({
+    mission: '',
+    quantity: '',
+    notes: '',
+  });
 
   const resources = [
     { id: 1, name: 'Medical Kits', category: 'Medical', quantity: 450, unit: 'units', status: 'In Stock', location: 'Warehouse A', lastUpdated: '2025-11-20', icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' },
@@ -51,6 +67,53 @@ const NGOResources = () => {
       case 'Equipment': return 'bg-purple-100 text-purple-800';
       default: return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleAllocateChange = (e) => {
+    const { name, value } = e.target;
+    setAllocateData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddSubmit = (e) => {
+    e.preventDefault();
+    console.log('Adding resource:', formData);
+    setFormData({ name: '', category: 'Medical', quantity: '', unit: 'units', location: '' });
+    setIsAddModalOpen(false);
+  };
+
+  const handleEdit = (resource) => {
+    setSelectedResource(resource);
+    setFormData({
+      name: resource.name,
+      category: resource.category,
+      quantity: resource.quantity,
+      unit: resource.unit,
+      location: resource.location,
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditSubmit = (e) => {
+    e.preventDefault();
+    console.log('Updating resource:', selectedResource.id, formData);
+    setIsEditModalOpen(false);
+  };
+
+  const handleAllocate = (resource) => {
+    setSelectedResource(resource);
+    setAllocateData({ mission: '', quantity: '', notes: '' });
+    setIsAllocateModalOpen(true);
+  };
+
+  const handleAllocateSubmit = (e) => {
+    e.preventDefault();
+    console.log('Allocating resource:', selectedResource.id, allocateData);
+    setIsAllocateModalOpen(false);
   };
 
   return (
@@ -106,7 +169,7 @@ const NGOResources = () => {
                 <option key={cat} value={cat}>{cat === 'all' ? 'All Categories' : cat}</option>
               ))}
             </select>
-            <Button variant="primary">+ Add Resource</Button>
+            <Button variant="primary" onClick={() => setIsAddModalOpen(true)}>+ Add Resource</Button>
           </div>
         </div>
       </Card>
@@ -153,12 +216,414 @@ const NGOResources = () => {
             </div>
 
             <div className="flex gap-2 pt-4 border-t border-gray-200">
-              <Button size="sm" variant="outline" fullWidth>Edit</Button>
-              <Button size="sm" variant="primary" fullWidth>Allocate</Button>
+              <Button size="sm" variant="outline" fullWidth onClick={() => handleEdit(resource)}>Edit</Button>
+              <Button size="sm" variant="primary" fullWidth onClick={() => handleAllocate(resource)}>Allocate</Button>
             </div>
           </Card>
         ))}
       </div>
+
+      {/* Add Resource Modal */}
+      {isAddModalOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={() => setIsAddModalOpen(false)}
+        >
+          <div 
+            className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Add New Resource</h2>
+                <button
+                  onClick={() => setIsAddModalOpen(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <form onSubmit={handleAddSubmit}>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Resource Name *
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      placeholder="e.g., Medical Kits"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Category *
+                      </label>
+                      <select
+                        name="category"
+                        value={formData.category}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      >
+                        <option value="Medical">Medical</option>
+                        <option value="Food">Food</option>
+                        <option value="Shelter">Shelter</option>
+                        <option value="Equipment">Equipment</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Location *
+                      </label>
+                      <select
+                        name="location"
+                        value={formData.location}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      >
+                        <option value="">Select Warehouse</option>
+                        <option value="Warehouse A">Warehouse A</option>
+                        <option value="Warehouse B">Warehouse B</option>
+                        <option value="Warehouse C">Warehouse C</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Quantity *
+                      </label>
+                      <input
+                        type="number"
+                        name="quantity"
+                        value={formData.quantity}
+                        onChange={handleInputChange}
+                        required
+                        min="1"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder="e.g., 100"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Unit *
+                      </label>
+                      <select
+                        name="unit"
+                        value={formData.unit}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      >
+                        <option value="units">units</option>
+                        <option value="packages">packages</option>
+                        <option value="bottles">bottles</option>
+                        <option value="kits">kits</option>
+                        <option value="boxes">boxes</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 mt-6">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    fullWidth
+                    onClick={() => setIsAddModalOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" variant="primary" fullWidth>
+                    Add Resource
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Resource Modal */}
+      {isEditModalOpen && selectedResource && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={() => setIsEditModalOpen(false)}
+        >
+          <div 
+            className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Edit Resource</h2>
+                <button
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <form onSubmit={handleEditSubmit}>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Resource Name *
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Category *
+                      </label>
+                      <select
+                        name="category"
+                        value={formData.category}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      >
+                        <option value="Medical">Medical</option>
+                        <option value="Food">Food</option>
+                        <option value="Shelter">Shelter</option>
+                        <option value="Equipment">Equipment</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Location *
+                      </label>
+                      <select
+                        name="location"
+                        value={formData.location}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      >
+                        <option value="">Select Warehouse</option>
+                        <option value="Warehouse A">Warehouse A</option>
+                        <option value="Warehouse B">Warehouse B</option>
+                        <option value="Warehouse C">Warehouse C</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Quantity *
+                      </label>
+                      <input
+                        type="number"
+                        name="quantity"
+                        value={formData.quantity}
+                        onChange={handleInputChange}
+                        required
+                        min="0"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Unit *
+                      </label>
+                      <select
+                        name="unit"
+                        value={formData.unit}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      >
+                        <option value="units">units</option>
+                        <option value="packages">packages</option>
+                        <option value="bottles">bottles</option>
+                        <option value="kits">kits</option>
+                        <option value="boxes">boxes</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-gray-900 mb-2">Current Status</h4>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Status</span>
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(selectedResource.status)}`}>
+                        {selectedResource.status}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 mt-6">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    fullWidth
+                    onClick={() => setIsEditModalOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" variant="primary" fullWidth>
+                    Save Changes
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Allocate Resource Modal */}
+      {isAllocateModalOpen && selectedResource && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={() => setIsAllocateModalOpen(false)}
+        >
+          <div 
+            className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Allocate Resource</h2>
+                <button
+                  onClick={() => setIsAllocateModalOpen(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="bg-blue-50 p-4 rounded-lg mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-green-100 rounded-lg flex items-center justify-center">
+                    <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={selectedResource.icon} />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-gray-900">{selectedResource.name}</h3>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className={`px-2 py-0.5 text-xs font-medium rounded ${getCategoryColor(selectedResource.category)}`}>
+                        {selectedResource.category}
+                      </span>
+                      <span className="text-sm text-gray-600">Available: <span className="font-bold">{selectedResource.quantity} {selectedResource.unit}</span></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <form onSubmit={handleAllocateSubmit}>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Select Mission *
+                    </label>
+                    <select
+                      name="mission"
+                      value={allocateData.mission}
+                      onChange={handleAllocateChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    >
+                      <option value="">Choose a mission...</option>
+                      <option value="1">Flood Relief - Houston</option>
+                      <option value="2">Food Distribution - Miami</option>
+                      <option value="3">Medical Camp - Boston</option>
+                      <option value="4">Shelter Setup - Seattle</option>
+                      <option value="5">Water Supply - Phoenix</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Quantity to Allocate *
+                    </label>
+                    <input
+                      type="number"
+                      name="quantity"
+                      value={allocateData.quantity}
+                      onChange={handleAllocateChange}
+                      required
+                      min="1"
+                      max={selectedResource.quantity}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      placeholder={`Max: ${selectedResource.quantity}`}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Maximum available: {selectedResource.quantity} {selectedResource.unit}</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Notes (Optional)
+                    </label>
+                    <textarea
+                      name="notes"
+                      value={allocateData.notes}
+                      onChange={handleAllocateChange}
+                      rows={3}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      placeholder="Add any special instructions or notes..."
+                    />
+                  </div>
+
+                  <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+                    <div className="flex items-start gap-2">
+                      <svg className="w-5 h-5 text-yellow-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <div>
+                        <p className="text-sm font-medium text-yellow-900">Allocation Confirmation</p>
+                        <p className="text-xs text-yellow-700 mt-1">This resource will be reserved for the selected mission and deducted from available inventory.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 mt-6">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    fullWidth
+                    onClick={() => setIsAllocateModalOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" variant="primary" fullWidth>
+                    Confirm Allocation
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 };
